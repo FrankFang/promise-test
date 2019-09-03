@@ -1,20 +1,6 @@
 class Promise2 {
   state = "pending";
   callbacks = [];
-
-  private resolveOrReject(state, data, i) {
-    if (this.state !== "pending") return;
-    this.state = state;
-    nextTick(() => {
-      // 遍历 callbacks，调用所有的 handle[0]
-      this.callbacks.forEach(handle => {
-        if (typeof handle[i] === "function") {
-          handle[i].call(undefined, data);
-        }
-      });
-    });
-  }
-
   resolve(result) {
     if (this.state !== "pending") return;
     this.state = "fulfilled";
