@@ -1,17 +1,79 @@
 class Promise2 {
   state = "pending";
   callbacks = [];
-  resolve(result) {
+  value = '';
+  resolve = result => {
     /* 完善 */
+    nextTick(() => {
+      if (this.state !== 'pending') return;
+      this.state = 'resolved';
+      this.value = result;
+      this.callbacks.forEach(callback => {
+          callback.succeed(this.value);
+      })
+      this.callbacks = [];
+    })
   }
-  reject(reason) {
+  reject = reason => {
     /* 完善 */
+    nextTick(() => {
+      if (this.state !== 'pending') return;
+      this.state = 'rejected';
+      this.value = reason;
+      this.callbacks.forEach(callback => {
+          callback.fail(this.value);
+      });
+      this.callbacks = [];
+    })
   }
   constructor(fn) {
     /* 完善 */
+    try {
+      fn(this.resolve, this.reject);
+    } catch (error) {
+      this.reject(error);
+    }
   }
   then(succeed?, fail?) {
     /* 完善 */
+    return new Promise2((res, rej) => {
+      let callback = {
+        succeed: (result) => {
+          if (!succeed) {
+            res(result);
+          }
+
+          try {
+            res(succeed(result));
+          } catch (error) {
+            rej(error);
+          }
+        },
+        fail: (reason) => {
+          if (!fail) {
+            rej(reason);
+          }
+
+          try {
+            res(fail(reason));
+          } catch (error) {
+            rej(error)
+          }
+        }
+      };
+
+      this.callbacks = [...this.callbacks, callback];
+
+      this.callbacks.forEach(callback => {
+        if (this.state === 'resolved') {
+          callback.succeed(this.value);
+        }
+
+        if (this.state === 'rejected') {
+          callback.fail(this.value)
+        }
+      })
+    })
   }
 }
 
