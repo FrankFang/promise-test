@@ -6,7 +6,7 @@ class Promise2 {
     /* 完善 */
     nextTick(() => {
       if (this.state !== 'pending') return;
-      this.state = 'resolved';
+      this.state = 'fulfilled';
       this.value = result;
       this.callbacks.forEach(callback => {
           callback.succeed(this.value);
@@ -28,10 +28,14 @@ class Promise2 {
   }
   constructor(fn) {
     /* 完善 */
+    // if (typeof fn !== 'function')  {
+    //   throw new TypeError('param is not a function');
+    // }
     try {
       fn(this.resolve, this.reject);
     } catch (error) {
-      this.reject(error);
+      // this.reject(error);
+      throw error;
     }
   }
   then(succeed?, fail?) {
@@ -65,7 +69,7 @@ class Promise2 {
       this.callbacks = [...this.callbacks, callback];
 
       this.callbacks.forEach(callback => {
-        if (this.state === 'resolved') {
+        if (this.state === 'fulfilled') {
           callback.succeed(this.value);
         }
 
