@@ -2,16 +2,42 @@ class Promise2 {
   state = "pending";
   callbacks = [];
   resolve(result) {
-    /* 完善 */
+    if (this.state !== "pending") return;
+    this.state = "fulfilled";
+    setTimeout(() => {
+      this.callbacks.forEach(handler => {
+        if (typeof handler[0] === "function") {
+          handler[0].call(undefined, result);
+        }
+      });
+    }, 0);
   }
   reject(reason) {
-    /* 完善 */
+    if (this.state !== "pending") return;
+    this.state = "rejected";
+    setTimeout(() => {
+      this.callbacks.forEach(handler => {
+        if (typeof handler[1] === "function") {
+          handler[1].call(undefined, reason);
+        }
+      });
+    }, 0);
   }
   constructor(fn) {
-    /* 完善 */
+    if (typeof fn !== "function") {
+      throw new Error("Promise只接收函数");
+    }
+    fn(this.resolve.bind(this), this.reject.bind(this));
   }
   then(succeed?, fail?) {
-    /* 完善 */
+    const handler = [];
+    if (typeof succeed === "function") {
+      handler[0] = succeed;
+    }
+    if (typeof fail === "function") {
+      handler[1] = fail;
+    }
+    this.callbacks.push(handler);
   }
 }
 
