@@ -1,21 +1,45 @@
-class Promise2 {
-  state = "pending";
-  callbacks = [];
-  resolve(result) {
-    /* 完善 */
+type ResolveFn = (result?: unknown) => void
+type RejectFn = (reason?: unknown) => void
+type PromiseState = 'pending' | 'fulfilled' | 'rejected'
+class MyPromise {
+  successes: ResolveFn[] = [];
+  fails: RejectFn[] = [];
+
+  state: PromiseState = 'pending';
+
+  constructor (execute: (resolve: ResolveFn, reject: RejectFn) => void) {
+    if (typeof execute !== 'function') throw new Error('参数只能是函数');
+    const resolve = this.resolve.bind(this), reject = this.reject.bind(this);
+    execute(resolve, reject);
   }
-  reject(reason) {
-    /* 完善 */
+
+  resolve (result?: unknown): void {
+    // setTimeout会在then方法执行后再执行
+    setTimeout(() => {
+      if (this.state === 'pending') {
+        this.state = 'fulfilled';
+        this.successes.forEach(success => success.call(undefined, result));
+      }
+    });
   }
-  constructor(fn) {
-    /* 完善 */
+
+  reject (reason?: unknown): void {
+    setTimeout(() => {
+      if (this.state === 'pending') {
+        this.state = 'rejected';
+        this.fails.forEach(fail => fail.call(undefined, reason));
+      }
+    });
   }
-  then(succeed?, fail?) {
-    /* 完善 */
+
+  then (success: any, fail?: any) {
+    (typeof success === 'function') && (this.successes.push(success));
+    (typeof fail === 'function') && (this.fails.push(fail));
   }
 }
 
-export default Promise2;
+export default MyPromise;
+
 
 function nextTick(fn) {
   if (process !== undefined && typeof process.nextTick === "function") {
