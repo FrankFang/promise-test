@@ -12,12 +12,12 @@ class Promise2 {
   state: PromiseState = "pending";
   callbacks: PromiseCallback = [];
   resolve(result: any) {
-    if (this.state !== "pending") return;
+    if (this.isPromiseFulfilledOrRejected()) return;
     this.changeState("fulfilled");
     nextTick(() => {
       this.callbacks.forEach(handler => {
         const [succeed] = handler;
-        // 不加 this.succeed, typescript 会认为有可能为 null
+        // 不加 && succeed, typescript 会认为有可能为 null
         if (Util_isFunction(succeed) && succeed) {
           succeed.call(undefined, result);
         }
@@ -25,12 +25,12 @@ class Promise2 {
     });
   }
   reject(reason) {
-    if (this.state !== "pending") return;
+    if (this.isPromiseFulfilledOrRejected()) return;
     this.changeState("rejected");
     nextTick(() => {
       this.callbacks.forEach(handler => {
         const [, fail] = handler;
-        // 不加 this.succeed, typescript 会认为有可能为 null
+        // 不加 && fail, typescript 会认为有可能为 null
         if (Util_isFunction(fail) && fail) {
           fail.call(undefined, reason);
         }
@@ -47,7 +47,11 @@ class Promise2 {
     this.callbacks.push([succeed || null, fail || null]);
   }
   changeState(state: PromiseState) {
+    if (this.isPromiseFulfilledOrRejected()) return;
     this.state = state;
+  }
+  isPromiseFulfilledOrRejected(): boolean {
+    return this.state !== "pending";
   }
 }
 
