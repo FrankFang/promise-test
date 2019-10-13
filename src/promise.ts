@@ -27,13 +27,12 @@ class Promise2 {
     if (typeof fn !== "function") {
       throw new Error("只接收函数")
     }
-    this.state = "pending"
     fn(this.resolve.bind(this), this.reject.bind(this))
   }
   then(succeed?, fail?) {
     const handle = []
-    handle[0] = onFulfilled
-    handle[1] = onRejected
+    handle[0] = succeed
+    handle[1] = fail
     this.callbacks.push(handle)
     return undefined
   }
