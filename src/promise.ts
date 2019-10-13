@@ -5,7 +5,7 @@ class Promise2 {
     if (this.state !== "pending") return
     this.state = "fulfilled"
     nextTick(() => {
-      this.callList.forEach(handle => {
+      this.callbacks.forEach(handle => {
         if (typeof handle[0] === "function") {
           handle[0].call(undefined, result)
         }
@@ -16,7 +16,7 @@ class Promise2 {
     if (this.state !== "pending") return
     this.state = "rejected"
     nextTick(() => {
-      this.callList.forEach(handle => {
+      this.callbacks.forEach(handle => {
         if (typeof handle[1] === "function") {
           handle[1].call(undefined, reason)
         }
@@ -34,7 +34,7 @@ class Promise2 {
     const handle = []
     handle[0] = onFulfilled
     handle[1] = onRejected
-    this.callList.push(handle)
+    this.callbacks.push(handle)
     return undefined
   }
 }
