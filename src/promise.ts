@@ -10,7 +10,7 @@ class Promise2 {
           handle[0].call(undefined, result)
         }
       });
-    }, 0)
+    })
   }
   reject(reason) {
     if (this.state !== "pending") return
@@ -21,7 +21,7 @@ class Promise2 {
           handle[1].call(undefined, reason)
         }
       });
-    }, 0)
+    })
   }
   constructor(fn) {
     if (typeof fn !== "function") {
