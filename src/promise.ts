@@ -1,17 +1,42 @@
 class Promise2 {
-  state = "pending";
-  callbacks = [];
+  succeed = []
+  fail = []
+  state = 'pending'
   resolve(result) {
     /* 完善 */
+    setTimeout(() => {
+      if (this.state !== "pending") return;
+      this.state = "fulfilled";
+      this.succeed.forEach(handle => {
+        if (typeof handle === 'function') {
+          handle.call(undefined, result)
+        }
+      });
+    }, 0)
   }
   reject(reason) {
     /* 完善 */
+    setTimeout(() => {
+      if (this.state !== "pending") return;
+      this.state = "rejected";
+      this.fail.forEach(handle => {
+        if (typeof handle === 'function') {
+          handle.call(undefined, reason)
+        }
+      });
+    }, 0)
   }
   constructor(fn) {
     /* 完善 */
+    if (typeof fn !== 'function') {
+      throw new Error('必须传对象')
+    }
+    fn(this.resolve.bind(this), this.reject.bind(this))
   }
   then(succeed?, fail?) {
     /* 完善 */
+    succeed && this.succeed.push(succeed)
+    fail && this.fail.push(fail)
   }
 }
 
