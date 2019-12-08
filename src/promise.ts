@@ -7,7 +7,7 @@ const isFunction = function (fn:any) {
 export default function myPromise(fn: Function) {
   if (!isFunction(fn)) throw Error('Promise resolver undefined is not a function')
   this.events = []
-  this.status = 'pending'
+  this.state = 'pending'
   fn.call(undefined, this.resolve.bind(this), this.reject.bind(this))
 }
 
@@ -19,8 +19,8 @@ myPromise.prototype.then = function (success?: Function, fail?: Function) {
 
 myPromise.prototype.resolve = function (value: any) {
   setTimeout(() => {
-    if (this.status !== 'pending') return
-    this.status = 'fulfilled'
+    if (this.state !== 'pending') return
+    this.state = 'fulfilled'
     this.events.map((fn: [Function, Function]) => {
       if (isFunction(fn[0])) {
         fn[0].call(undefined, value)
@@ -31,8 +31,8 @@ myPromise.prototype.resolve = function (value: any) {
 
 myPromise.prototype.reject = function (reason: any) {
   setTimeout(() => {
-    if (this.status !== 'pending') return
-    this.status = 'rejected'
+    if (this.state !== 'pending') return
+    this.state = 'rejected'
     this.events.map((fn: [Function, Function]) => {
       if (isFunction(fn[1])) {
         fn[1].call(undefined, reason)
