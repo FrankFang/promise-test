@@ -41,8 +41,6 @@ myPromise.prototype.reject = function (reason: any) {
   })
 }
 
-export default Promise2;
-
 function nextTick(fn) {
   if (process !== undefined && typeof process.nextTick === "function") {
     return process.nextTick(fn);
