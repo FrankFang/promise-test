@@ -4,7 +4,7 @@ const isFunction = function (fn:any) {
   return true
 }
 
-export default function Promise2(fn: Function) {
+export default function myPromise(fn: Function) {
   if (!isFunction(fn)) throw Error('Promise resolver undefined is not a function')
   this.events = []
   this.status = 'pending'
