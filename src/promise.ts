@@ -1,35 +1,41 @@
-class Promise2 {
-  state = "pending";
-  callbacks = [];
-  resolve(result) {
-    /* 完善 */
-  }
-  reject(reason) {
-    /* 完善 */
-  }
-  constructor(fn) {
-    /* 完善 */
-  }
-  then(succeed?, fail?) {
-    /* 完善 */
-  }
+class P {
+    constructor(fn) {
+        if (typeof fn !== 'function') {
+            throw new Error('parameter is not a function.');
+        }
+        fn(this.resolve.bind(this), this.reject.bind(this));
+    }
+
+    successFns = [];
+    failFns = [];
+    state = 'pending';
+
+    resolve(arg) {
+        setTimeout(() => {
+            if (this.state === 'pending' && this.successFns.length > 0) {
+                this.successFns.forEach(success => {
+                    success.call(undefined, arg);
+                });
+                this.state = 'fulfilled';
+            }
+        });
+    }
+
+    reject(arg) {
+        setTimeout(() => {
+            if (this.state === 'pending' && this.failFns.length > 0) {
+                this.failFns.forEach(fail => {
+                    fail.call(undefined, arg)
+                });
+                this.state = 'rejected';
+            }
+        });
+    }
+
+    then(success, fail) {
+        if (typeof success === 'function') this.successFns.push(success);
+        if (typeof fail === 'function') this.failFns.push(fail);
+    }
 }
 
-export default Promise2;
-
-function nextTick(fn) {
-  if (process !== undefined && typeof process.nextTick === "function") {
-    return process.nextTick(fn);
-  } else {
-    var counter = 1;
-    var observer = new MutationObserver(fn);
-    var textNode = document.createTextNode(String(counter));
-
-    observer.observe(textNode, {
-      characterData: true
-    });
-
-    counter = counter + 1;
-    textNode.data = String(counter);
-  }
-}
+module.exports = P;
