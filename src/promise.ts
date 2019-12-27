@@ -38,4 +38,4 @@ class P {
     }
 }
 
-module.exports = P;
+export default P;
