@@ -32,7 +32,7 @@ class P {
         });
     }
 
-    then(success, fail？) {
+    then(success, fail?) {
         if (typeof success === 'function') this.successFns.push(success);
         if (typeof fail === 'function') this.failFns.push(fail);
     }
