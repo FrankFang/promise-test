@@ -2,16 +2,31 @@ class Promise2 {
   state = "pending";
   callbacks = [];
   resolve(result) {
-    /* 完善 */
+    if (this.state !== "pending") return;
+    this.state = "fulfilled";
+    nextTick(() => {
+      this.callbacks.forEach(handle => {
+        if (typeof handle[0] === "function") handle[0].call(undefined, result);
+      });
+    });
   }
   reject(reason) {
-    /* 完善 */
+    if (this.state !== "pending") return;
+    this.state = "rejected";
+    nextTick(() => {
+      this.callbacks.forEach(handle => {
+        if (typeof handle[1] === "function") handle[1].call(undefined, reason);
+      });
+    });
   }
   constructor(fn) {
-    /* 完善 */
+    if (typeof fn !== "function") {
+      throw new Error("参数必须为函数");
+    }
+    fn(this.resolve.bind(this), this.reject.bind(this));
   }
   then(succeed?, fail?) {
-    /* 完善 */
+    this.callbacks.push([succeed, fail]);
   }
 }
 
