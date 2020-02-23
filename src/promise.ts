@@ -24,7 +24,9 @@ class Promise2 {
     }, 0)
   }
   constructor(fn) {
-    if (typeof fn !== "function") return
+    if (typeof fn !== "function") {
+        throw new Error('只接受一个函数')
+    }
     fn(this.resolve.bind(this), this.reject.bind(this))
   }
   then(succeed?, fail?) {
@@ -32,7 +34,7 @@ class Promise2 {
     if (typeof succeed === "function") {
       handle[0] = succeed
     }
-    if (typeof succeed === "function") {
+    if (typeof fail === "function") {
       handle[1] = fail
     }
     this.callbacks.push(handle)
