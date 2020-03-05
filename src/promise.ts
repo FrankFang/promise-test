@@ -15,7 +15,7 @@ class SelfPromise {
     private static readonly FULFILLED = 'fulfilled'
     private static readonly REJECTED = 'rejected'
 
-    private state: 'pending' | 'fulfilled' | 'rejected' = "pending"
+    public state: 'pending' | 'fulfilled' | 'rejected' = "pending"
     private value: unknown
     private ignore: boolean = false
 
@@ -148,10 +148,10 @@ class SelfPromise {
         })
     }
 
-    public then(onfulfilled?: (value: unknown) => unknown, onrejected?: (reason: unknown) => unknown): SelfPromise {
+    public then(onfulfilled?: any, onrejected?: any){
         return new SelfPromise((resolve, reject) => {
             if (this.state === SelfPromise.PENDING) {
-                this.callBacks.push({ onfulfilled, onrejected, resolve, reject })
+                this.callBacks.push({ onfulfilled , onrejected, resolve, reject })
             } else {
                 this.handleCallback({ onfulfilled, onrejected, resolve, reject }, this.value)
             }
