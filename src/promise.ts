@@ -1,17 +1,51 @@
 class Promise2 {
   state = "pending";
   callbacks = [];
-  resolve(result) {
+  resolve = result => {
     /* 完善 */
+    if (this.state !== 'pending') return;
+    this.state = 'fulfilled';
+    setTimeout(() => {
+      this.callbacks.forEach(handlers => {
+        const [succeed] = handlers;
+        if (typeof succeed === 'function') {
+          succeed.call(undefined, result);
+        }
+      });
+    }, 0);
   }
-  reject(reason) {
+  reject = reason => {
     /* 完善 */
+    if (this.state !== 'pending') return;
+    this.state = 'rejected';
+    setTimeout(() => {
+      this.callbacks.forEach(handlers => {
+        const [, fail] = handlers;
+        if (typeof fail === 'function') {
+          fail.call(undefined, reason);
+        }
+      });
+    }, 0);
   }
   constructor(fn) {
     /* 完善 */
+    if (typeof fn !== 'function') {
+      throw new Error('给劳资传函数');
+    }
+    fn(this.resolve, this.reject);
   }
   then(succeed?, fail?) {
     /* 完善 */
+    const handlers = [];
+    if (typeof succeed === 'function') {
+      handlers[0] = succeed;
+    }
+    if (typeof fail === 'function') {
+      handlers[1] = fail;
+    }
+    if (handlers.length) {
+      this.callbacks.push(handlers);
+    }
   }
 }
 
