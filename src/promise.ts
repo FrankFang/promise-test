@@ -2,7 +2,7 @@ class Promise2 {
   state = "pending";
   callbacks = [];
   resolve(result) {
-    /* 完善 */
+    console.log('1');
   }
   reject(reason) {
     /* 完善 */
