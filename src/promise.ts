@@ -1,5 +1,3 @@
-import { EROFS } from "constants";
-
 class Promise2 {
   state = 'pending';
   callbacks = [];
