@@ -1,5 +1,5 @@
 class Promise2 {
-  status = "pending";
+  state = "pending";
   succed = [];
   fail = [];
   constructor(fn) {
@@ -9,9 +9,9 @@ class Promise2 {
     fn(this.resolve.bind(this), this.reject.bind(this));
   }
   resolve(value) {
-    if (this.status === "pending") {
-      this.status = "fulfilled";
-      setTimeout(function () {
+    if (this.state === "pending") {
+      this.state = "fulfilled";
+      setTimeout(() =>{
         this.succed.forEach((succedFn) => {
           if (typeof succedFn === "function") {
             succedFn(value);
@@ -21,10 +21,10 @@ class Promise2 {
     }
   }
   reject(reason) {
-    if (this.status === "pending") {
-      this.status = "rejected";
-      setTimeout(function () {
-        this.succed.forEach((fillFn) => {
+    if (this.state === "pending") {
+      this.state = "rejected";
+      setTimeout(() => {
+        this.fail.forEach((fillFn) => {
           if (typeof fillFn === "function") {
             fillFn(reason);
           }
@@ -32,7 +32,7 @@ class Promise2 {
       }, 0);
     }
   }
-  then(succed, fail) {
+  then(succed?, fail?) {
     if (typeof succed === "function") {
       this.succed.push(succed);
     }
