@@ -1,17 +1,44 @@
 class Promise2 {
-  state = "pending";
-  callbacks = [];
-  resolve(result) {
-    /* 完善 */
+  status = "pending";
+  succed = [];
+  fail = [];
+  constructor(fn) {
+    if (typeof fn !== "function") {
+      throw new Error("我只接收函数");
+    }
+    fn(this.resolve.bind(this), this.reject.bind(this));
+  }
+  resolve(value) {
+    if (this.status === "pending") {
+      this.status = "fulfilled";
+      setTimeout(function () {
+        this.succed.forEach((succedFn) => {
+          if (typeof succedFn === "function") {
+            succedFn(value);
+          }
+        });
+      }, 0);
+    }
   }
   reject(reason) {
-    /* 完善 */
+    if (this.status === "pending") {
+      this.status = "rejected";
+      setTimeout(function () {
+        this.succed.forEach((fillFn) => {
+          if (typeof fillFn === "function") {
+            fillFn(reason);
+          }
+        });
+      }, 0);
+    }
   }
-  constructor(fn) {
-    /* 完善 */
-  }
-  then(succeed?, fail?) {
-    /* 完善 */
+  then(succed, fail) {
+    if (typeof succed === "function") {
+      this.succed.push(succed);
+    }
+    if (typeof fail === "function") {
+      this.fail.push(fail);
+    }
   }
 }
 
