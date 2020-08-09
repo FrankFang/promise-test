@@ -1,3 +1,5 @@
+CI 历史：https://travis-ci.org/github/FrankFang/promise-test
+
 # 使用步骤
 
 1. 点击页面有上角的 Fork 按钮
