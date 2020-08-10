@@ -1,4 +1,4 @@
-CI 历史：https://travis-ci.org/github/FrankFang/promise-test
+CI 历史：https://travis-ci.org/github/FrankFang/promise-test/pull_requests
 
 # 使用步骤
 
