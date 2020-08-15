@@ -1,6 +1,7 @@
 import * as chai from "chai";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
+
 chai.use(sinonChai);
 
 const assert = chai.assert;
@@ -132,7 +133,7 @@ describe("Promise", () => {
     const promise = new Promise(resolve => {
       resolve();
     });
-    promise.then(function() {
+    promise.then(function () {
       "use strict";
       assert(this === undefined);
       done();
