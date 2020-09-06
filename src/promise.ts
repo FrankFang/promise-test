@@ -1,17 +1,41 @@
 class Promise2 {
-  state = "pending";
-  callbacks = [];
+  PENDING = 'PENDING';
+  FULFILLED = 'FULFILLED';
+  REJECTED = 'REJECTED';
+  state = this.PENDING;
+  fulfilledCallbacks = [];
+  rejectedCallbacks = [];
+
   resolve(result) {
-    /* 完善 */
+    if (this.state !== this.PENDING) return;
+    this.state = this.FULFILLED;
+    setTimeout(() => {
+      this.fulfilledCallbacks.map(
+        cb => typeof cb === 'function' && cb.call(undefined, result)
+      );
+    }, 0);
   }
   reject(reason) {
-    /* 完善 */
+    if (this.state !== this.PENDING) return;
+    this.state = this.REJECTED;
+    setTimeout(() => {
+      this.rejectedCallbacks.map(
+        cb => typeof cb === 'function' && cb.call(undefined, reason)
+      );
+    }, 0);
   }
+
   constructor(fn) {
-    /* 完善 */
+    if (typeof fn !== 'function') {
+      throw new Error('new Promise2() 的参数只能是函数');
+    }
+    fn(this.resolve.bind(this), this.reject.bind(this));
   }
-  then(succeed?, fail?) {
-    /* 完善 */
+
+  then(onFulfilled?, onRejected?) {
+    typeof onFulfilled === 'function' &&
+      this.fulfilledCallbacks.push(onFulfilled);
+    typeof onRejected === 'function' && this.rejectedCallbacks.push(onRejected);
   }
 }
 
