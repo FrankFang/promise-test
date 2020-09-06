@@ -1,7 +1,7 @@
 class Promise2 {
-  PENDING = 'PENDING';
-  FULFILLED = 'FULFILLED';
-  REJECTED = 'REJECTED';
+  PENDING = 'pending';
+  FULFILLED = 'fulfilled';
+  REJECTED = 'rejected';
   state = this.PENDING;
   fulfilledCallbacks = [];
   rejectedCallbacks = [];
