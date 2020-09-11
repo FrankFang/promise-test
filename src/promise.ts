@@ -1,17 +1,39 @@
 class Promise2 {
-  state = "pending";
-  callbacks = [];
+  state = "pending"
+  callbacks = []
   resolve(result) {
-    /* 完善 */
+    // onFulfilled
+    if (this.state === 'fulfilled') return
+    this.state = 'fulfilled'
+    setTimeout(() => {
+      this.callbacks.forEach(temp => {
+        if (typeof temp[0] !== 'function') return
+        temp[0].call(undefined, result)
+      })
+    }, 0)
   }
   reject(reason) {
-    /* 完善 */
+    // onRejected
+    if (this.state === 'rejected') return
+    this.state = 'rejected'
+    setTimeout(() => {
+      this.callbacks.forEach(temp => {
+        if (typeof temp[1] !== 'function') return
+        temp[1].call(undefined, reason)
+      })
+    }, 0)
   }
   constructor(fn) {
-    /* 完善 */
+    if (typeof fn !== 'function') {
+      throw new Error('不是一个函数')
+    }
+    fn(this.resolve.bind(this), this.reject.bind(this))
   }
   then(succeed?, fail?) {
-    /* 完善 */
+    let temp = []
+    temp[0] = succeed
+    temp[1] = fail
+    this.callbacks.push(temp)
   }
 }
 
