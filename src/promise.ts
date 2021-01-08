@@ -1,18 +1,44 @@
 class Promise2 {
-  state = "pending";
-  callbacks = [];
-  resolve(result) {
-    /* 完善 */
-  }
-  reject(reason) {
-    /* 完善 */
-  }
-  constructor(fn) {
-    /* 完善 */
-  }
-  then(succeed?, fail?) {
-    /* 完善 */
-  }
+    callbacks=[];
+    state='pending'
+    resolve(result){
+        if(this.state==='fulfilled') return;
+        this.state='fulfilled';
+        setTimeout(()=>{
+            this.callbacks.forEach(callback=>{
+                if(typeof callback[0]==='function'){
+                    callback[0].call(undefined,result);
+                }
+            })
+        },0);
+    }
+    reject(reason){
+        if(this.state==='rejected') return;
+        this.state='rejected';
+        setTimeout(()=>{
+            this.callbacks.forEach(callback=>{
+                if(typeof callback[1]==='function'){
+                    callback[1].call(undefined,reason);
+                }
+            })
+        },0);
+    }
+    constructor(fn) {
+        if(typeof fn!=='function'){
+            throw new Error('Promise只接受一个函数参数');
+        }
+        fn(this.resolve.bind(this),this.reject.bind(this));
+    }
+    then(resolve?,reject?){
+        const callback=[];
+        if(typeof resolve==='function'){
+            callback[0]=resolve;
+        }
+        if(typeof reject==='function'){
+            callback[1]=reject;
+        }
+        this.callbacks.push(callback);
+    }
 }
 
 export default Promise2;
