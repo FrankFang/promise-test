@@ -3,9 +3,9 @@
 }
 
 export enum State {
-  pending,
-  fulfilled,
-  rejected,
+  pending='pending',
+  fulfilled='fulfilled',
+  rejected='rejected',
 }
 type onFulfilled = (data: unknown) => void;
 type onRejected = (error: unknown) => void;
