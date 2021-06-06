@@ -45,6 +45,7 @@ describe("Promise", () => {
     const success = sinon.fake();
     const promise = new Promise((resolve, reject) => {
       assert.isFalse(success.called);
+      // @ts-ignore
       resolve();
       setTimeout(() => {
         assert.isTrue(success.called);
@@ -58,6 +59,7 @@ describe("Promise", () => {
     const fail = sinon.fake();
     const promise = new Promise((resolve, reject) => {
       assert.isFalse(fail.called);
+      // @ts-ignore
       reject();
       setTimeout(() => {
         assert.isTrue(fail.called);
@@ -69,8 +71,10 @@ describe("Promise", () => {
   });
   it("2.2.1 onFulfilled和onRejected都是可选的参数：", () => {
     const promise = new Promise(resolve => {
+      // @ts-ignore
       resolve();
     });
+    // @ts-ignore
     promise.then(false, null);
     assert(1 === 1);
   });
@@ -78,9 +82,12 @@ describe("Promise", () => {
     const succeed = sinon.fake();
     const promise = new Promise(resolve => {
       assert.isFalse(succeed.called);
+      // @ts-ignore
       resolve(233);
+      // @ts-ignore
       resolve(2333);
       setTimeout(() => {
+        // @ts-ignore
         assert(promise.state === "fulfilled");
         assert.isTrue(succeed.calledOnce);
         assert(succeed.calledWith(233));
@@ -93,9 +100,12 @@ describe("Promise", () => {
     const fail = sinon.fake();
     const promise = new Promise((resolve, reject) => {
       assert.isFalse(fail.called);
+      // @ts-ignore
       reject(233);
+      // @ts-ignore
       reject(2333);
       setTimeout(() => {
+        // @ts-ignore
         assert(promise.state === "rejected");
         assert.isTrue(fail.calledOnce);
         assert(fail.calledWith(233));
@@ -107,6 +117,7 @@ describe("Promise", () => {
   it("2.2.4 在我的代码执行完之前，不得调用 then 后面的俩函数", done => {
     const succeed = sinon.fake();
     const promise = new Promise(resolve => {
+      // @ts-ignore
       resolve();
     });
     promise.then(succeed);
@@ -119,6 +130,7 @@ describe("Promise", () => {
   it("2.2.4 失败回调", done => {
     const fn = sinon.fake();
     const promise = new Promise((resolve, reject) => {
+      // @ts-ignore
       reject();
     });
     promise.then(null, fn);
@@ -130,6 +142,7 @@ describe("Promise", () => {
   });
   it("2.2.5 onFulfilled和onRejected必须被当做函数调用", done => {
     const promise = new Promise(resolve => {
+      // @ts-ignore
       resolve();
     });
     promise.then(function() {
@@ -140,6 +153,7 @@ describe("Promise", () => {
   });
   it("2.2.6 then可以在同一个promise里被多次调用", done => {
     const promise = new Promise(resolve => {
+      // @ts-ignore
       resolve();
     });
     const callbacks = [sinon.fake(), sinon.fake(), sinon.fake()];
@@ -157,6 +171,7 @@ describe("Promise", () => {
   });
   it("2.2.6.2 then可以在同一个promise里被多次调用", done => {
     const promise = new Promise((resolve, reject) => {
+      // @ts-ignore
       reject();
     });
     const callbacks = [sinon.fake(), sinon.fake(), sinon.fake()];
