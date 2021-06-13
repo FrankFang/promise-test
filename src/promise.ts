@@ -1,17 +1,41 @@
 class Promise2 {
-  state = "pending";
-  callbacks = [];
-  resolve(result) {
-    /* 完善 */
+  private state: String = 'pending'
+  private callbackList: Function[][] = []
+
+  constructor(fn:Function) {
+    try {
+      fn((...params)=>{ setTimeout(()=>{this.resolve(...params)}) }, this.reject.bind(this))
+    } catch (error) {
+      this.reject.bind(this, error)
+    }
+
   }
-  reject(reason) {
-    /* 完善 */
+
+  then(onFulfilled:Function, onRejected: Function){
+    if(this.state === 'pending') {
+      this.callbackList.push([onFulfilled, onRejected ])
+    }
+
+    return this
   }
-  constructor(fn) {
-    /* 完善 */
+
+  resolve(...args) {
+    if(this.state === 'pending') {
+      this.state = 'fulfilled'
+      this.callbackList.forEach(e => {
+        e[0](...args)
+      })
+      this.callbackList = []
+    }
   }
-  then(succeed?, fail?) {
-    /* 完善 */
+
+  reject(args) {
+    if(this.state === 'pending') {
+      this.state = 'fulfilled'
+      this.callbackList.forEach(e => {
+        e[1](...args)
+      })
+    }
   }
 }
 
