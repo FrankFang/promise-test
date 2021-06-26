@@ -20,7 +20,13 @@ class Promise2 {
     this.state = state
     nextTick(() => {
       this.callbacks.map(hanld => {
-        if(typeof hanld[index] === 'function') hanld[index].call(undefined, data)
+        if(typeof hanld[index] !== 'function') return
+        try {
+          const x = hanld[index].call(undefined, data)
+          hanld[2].resolveWith(x)
+        } catch (error) {
+          hanld[2].reject(error)
+        }
       })
     })
   }
@@ -47,8 +53,30 @@ class Promise2 {
     if(typeof fail === "function") {
       handle[1] = fail
     }
+    handle[2] = new Promise2(() => {})
     this.callbacks.push(handle)
+    return handle[2]
   }
+  /**
+   * 
+   */
+  resolveWith(x) {
+    if(x instanceof Promise2) {
+      this.resolveWithPromise(x)
+      return
+    }
+    this.resolve(x)
+  }
+  /**
+   * 
+   */
+  resolveWithPromise(x) {
+    x.then(
+      res => this.resolve(res),
+      err => this.reject(err)
+    )
+  }
+
 }
 
 export default Promise2;
