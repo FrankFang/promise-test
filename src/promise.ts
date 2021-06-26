@@ -1,18 +1,82 @@
+type TState = "pending" | "fulfilled" | "rejected"
+
 class Promise2 {
-  state = "pending";
+  state: TState = "pending";
   callbacks = [];
-  resolve(result) {
-    /* 完善 */
-  }
-  reject(reason) {
-    /* 完善 */
-  }
+  /**
+   * 
+   */
   constructor(fn) {
-    /* 完善 */
+    if(typeof fn !== "function") {
+      throw new Error("new Promise 必须接收一个函数")
+    }
+    fn(this.resolve.bind(this), this.reject.bind(this))
   }
-  then(succeed?, fail?) {
-    /* 完善 */
+  /**
+   * 
+   */
+  resolveOrReject(state: TState, data: any, index: number) {
+    if(this.state !== "pending") return
+    this.state = state
+    nextTick(() => {
+      this.callbacks.map(hanld => {
+        if(typeof hanld[index] !== 'function') return
+        try {
+          const x = hanld[index].call(undefined, data)
+          hanld[2].resolveWith(x)
+        } catch (error) {
+          hanld[2].reject(error)
+        }
+      })
+    })
   }
+  /**
+   * 
+   */
+  resolve(result) {
+    this.resolveOrReject("fulfilled", result, 0)
+  }
+  /**
+   * 
+   */
+  reject(err) {
+    this.resolveOrReject("rejected", err, 1)
+  }
+  /**
+   * 
+   */
+  then(success?, fail?) {
+    let handle = []
+    if(typeof success === "function") {
+      handle[0] = success
+    }
+    if(typeof fail === "function") {
+      handle[1] = fail
+    }
+    handle[2] = new Promise2(() => {})
+    this.callbacks.push(handle)
+    return handle[2]
+  }
+  /**
+   * 
+   */
+  resolveWith(x) {
+    if(x instanceof Promise2) {
+      this.resolveWithPromise(x)
+      return
+    }
+    this.resolve(x)
+  }
+  /**
+   * 
+   */
+  resolveWithPromise(x) {
+    x.then(
+      res => this.resolve(res),
+      err => this.reject(err)
+    )
+  }
+
 }
 
 export default Promise2;
