@@ -2,16 +2,32 @@ class Promise2 {
   state = "pending";
   callbacks = [];
   resolve(result) {
-    /* 完善 */
+    if (this.state !== 'pending') return;
+    this.state = 'fulfilled';
+    nextTick(() => {
+      this.callbacks.forEach((item) => {
+        item[0] && item[0].call(undefined, result);
+      });
+    });
   }
   reject(reason) {
-    /* 完善 */
+    if (this.state !== 'pending') return;
+    this.state = 'rejected';
+    nextTick(() => {
+      this.callbacks.forEach((item) => {
+        item[1] && item[1].call(undefined, reason);
+      });
+    });
   }
   constructor(fn) {
-    /* 完善 */
+    if (typeof fn !== 'function') throw new Error('promise必须接受一个函数');
+    fn(this.resolve.bind(this), this.reject.bind(this));
   }
   then(succeed?, fail?) {
-    /* 完善 */
+    const array = [null, null];
+    if (typeof succeed === 'function') array[0] = succeed;
+    if (typeof fail === 'function') array[1] = fail;
+    this.callbacks.push(array);
   }
 }
 
