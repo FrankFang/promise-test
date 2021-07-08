@@ -1,17 +1,47 @@
 class Promise2 {
   state = "pending";
   callbacks = [];
+
   resolve(result) {
-    /* 完善 */
+    if (this.state !== 'pending') return;
+    this.state = 'fulfilled'
+    nextTick(() => {
+      this.callbacks.forEach(callback => {
+        if (typeof callback[0] === "function") {
+          callback[0].call(undefined, result)
+        }
+      })
+    })
   }
+
   reject(reason) {
-    /* 完善 */
+    if (this.state !== 'pending') return;
+    this.state = 'rejected'
+    nextTick(() => {
+      this.callbacks.forEach(callback => {
+        if (typeof callback[1] === "function") {
+          callback[1].call(undefined, reason)
+        }
+      })
+    })
   }
+
   constructor(fn) {
-    /* 完善 */
+    if (typeof fn !== "function") {
+      throw Error('A function must be passed in as an argument.')
+    }
+    fn.call(undefined, this.resolve.bind(this), this.reject.bind(this))
   }
+
   then(succeed?, fail?) {
-    /* 完善 */
+    const callback = []
+    if (typeof succeed === "function") {
+      callback[0] = succeed
+    }
+    if (typeof fail === "function") {
+      callback[1] = fail
+    }
+    this.callbacks.push(callback)
   }
 }
 
