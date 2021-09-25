@@ -1,17 +1,44 @@
 class Promise2 {
-  state = "pending";
-  callbacks = [];
+  state = 'pending';
+  eventQueue = [];
+  constructor(fn) {
+    if (typeof fn !== 'function') {
+      throw new Error('Promise only receive function');
+    }
+    fn(this.resolve.bind(this), this.reject.bind(this));
+  }
   resolve(result) {
-    /* 完善 */
+    if (this.state !== 'pending') return;
+    this.state = 'fulfilled';
+    setTimeout(() => {
+      this.eventQueue.forEach(handles => {
+        if (typeof handles[0] === 'function') {
+          handles[0].call(undefined, result);
+        }
+      });
+    });
   }
   reject(reason) {
-    /* 完善 */
+    if (this.state !== 'pending') return;
+    this.state = 'rejected';
+    setTimeout(() => {
+      this.eventQueue.forEach(handles => {
+        if (typeof handles[1] === 'function') {
+          handles[1].call(undefined, reason);
+        }
+      });
+    });
   }
-  constructor(fn) {
-    /* 完善 */
-  }
-  then(succeed?, fail?) {
-    /* 完善 */
+  then(resolve, reject) {
+    const handles = [];
+    if (typeof resolve === 'function') {
+      handles[0] = resolve;
+    }
+    if (typeof reject === 'function') {
+      handles[1] = reject;
+    }
+    this.eventQueue.push(handles);
+    return this;
   }
 }
 
