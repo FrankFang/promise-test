@@ -1,18 +1,47 @@
 class Promise2 {
   state = "pending";
-  callbacks = [];
-  resolve(result) {
-    /* 完善 */
-  }
-  reject(reason) {
-    /* 完善 */
-  }
-  constructor(fn) {
-    /* 完善 */
-  }
-  then(succeed?, fail?) {
-    /* 完善 */
-  }
+    callbacks = [];
+
+    resolve(result) {
+        setTimeout(() => {
+            if (this.state !== "pending") return;
+            this.state = "fulfilled";
+            this.callbacks.forEach((handle) => {
+                if (typeof handle[0] === "function") {
+                    handle[0].call(undefined, result);
+                }
+            });
+        });
+    }
+    reject(reason) {
+        setTimeout(() => {
+            if (this.state !== "pending") return;
+            this.state = "rejected";
+            this.callbacks.forEach((handle) => {
+                if (typeof handle[1] === "function") {
+                    handle[1].call(undefined, reason);
+                }
+            });
+        });
+    }
+
+    constructor(fn) {
+        if (typeof fn !== "function") {
+            throw new Error("promise 的构造函数的参数只接受函数");
+        }
+        fn(this.resolve.bind(this), this.reject.bind(this));
+    }
+
+    then(succeed?, fail?) {
+        const handle = [];
+        if (typeof succeed === "function") {
+            handle[0] = succeed;
+        }
+        if (typeof fail === "function") {
+            handle[1] = fail;
+        }
+        this.callbacks.push(handle);
+    }
 }
 
 export default Promise2;
