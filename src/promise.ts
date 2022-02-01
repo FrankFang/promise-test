@@ -1,17 +1,50 @@
 class Promise2 {
   state = "pending";
   callbacks = [];
-  resolve(result) {
-    /* 完善 */
-  }
-  reject(reason) {
-    /* 完善 */
-  }
   constructor(fn) {
     /* 完善 */
+    if (typeof fn !== 'function') {
+      throw new Error('必须传入一个函数')
+    }
+    fn(this.resolve.bind(this), this.reject.bind(this))
+  }
+  resolve(result) {
+    if (this.state !== 'pending') return
+    this.state = 'fulfilled'
+    /* 完善 */
+    setTimeout(() => {
+      this.callbacks.forEach((handle) => {
+        const func = handle[0]
+        if (typeof func === 'function') {
+          func.call(undefined, result)
+        }
+      })
+    })
+  }
+  reject(reason) {
+    if (this.state !== 'pending') return
+    this.state = 'rejected'
+    /* 完善 */
+    setTimeout(() => {
+      this.callbacks.forEach((handle) => {
+        const func = handle[1]
+        if (typeof func === 'function') {
+          func.call(undefined, reason)
+        }
+      })
+    })
   }
   then(succeed?, fail?) {
     /* 完善 */
+    const handle = [null, null]
+    if (typeof succeed === 'function') {
+      handle[0] = succeed
+    }
+    if (typeof fail === 'function') {
+      handle[1] = fail
+    }
+
+    this.callbacks.push(handle)
   }
 }
 
