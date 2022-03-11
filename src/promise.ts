@@ -2,16 +2,46 @@ class Promise2 {
   state = "pending";
   callbacks = [];
   resolve(result) {
+    if (this.state !== "pending") return;
+    this.state = "fullfilled";
     /* 完善 */
+    setTimeout(() => {
+      this.callbacks.forEach(handle => {
+        if (typeof handle.succeed === "function") {
+          handle.succeed.call(undefined, result);
+        }
+      });
+    }, 0);
   }
   reject(reason) {
-    /* 完善 */
+    if (this.state !== "pending") return;
+    this.state = "rejected";
+    setTimeout(() => {
+      this.callbacks.forEach(handle => {
+        if (typeof handle.fail === "function") {
+          handle.fail.call(undefined, reason);
+        }
+      });
+    }, 0);
   }
   constructor(fn) {
-    /* 完善 */
+    if (typeof fn !== "function") {
+      throw new Error("只接受一个函数为参数");
+    }
+    fn(this.resolve.bind(this), this.reject.bind(this));
   }
   then(succeed?, fail?) {
-    /* 完善 */
+    const handle = {
+      succeed: null,
+      fail: null
+    };
+    if (typeof succeed === "function") {
+      handle.succeed = succeed;
+    }
+    if (typeof fail === "function") {
+      handle.fail = fail;
+    }
+    this.callbacks.push(handle);
   }
 }
 
@@ -33,3 +63,5 @@ function nextTick(fn) {
     textNode.data = String(counter);
   }
 }
+
+

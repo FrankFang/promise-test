@@ -81,7 +81,7 @@ describe("Promise", () => {
       resolve(233);
       resolve(2333);
       setTimeout(() => {
-        assert(promise.state === "fulfilled");
+        assert(promise.state === "fullfilled");
         assert.isTrue(succeed.calledOnce);
         assert(succeed.calledWith(233));
         done();
