@@ -26,7 +26,7 @@ describe("Promise", () => {
     });
   });
   it("new Promise(fn) 会生成一个对象，对象有 then 方法", () => {
-    const promise = new Promise(() => {});
+    const promise = new Promise(() => { });
     assert.isFunction(promise.then);
   });
   it("new Promise(fn) 中的 fn 立即执行", () => {
@@ -132,7 +132,7 @@ describe("Promise", () => {
     const promise = new Promise(resolve => {
       resolve();
     });
-    promise.then(function() {
+    promise.then(function () {
       "use strict";
       assert(this === undefined);
       done();
@@ -172,4 +172,142 @@ describe("Promise", () => {
       done();
     });
   });
+
+  // 添加了 then 的返回值
+  it("2.2.7 then必须返回一个promise", () => {
+    const promise = new Promise(resolve => {
+      resolve();
+    });
+    const promise2 = promise.then(() => { }, () => { });
+    assert(promise2 instanceof Promise);
+  });
+  it("2.2.7.1 如果 then(success, fail) 中的 success 返回一个值x, 运行 [[Resolve]](promise2, x) ", done => {
+    const promise1 = new Promise(resolve => {
+      resolve();
+    });
+    promise1
+      .then(() => "成功", () => { })
+      .then(result => {
+        assert.equal(result, "成功");
+        done();
+      });
+  });
+  it("2.2.7.1.2 success 的返回值是一个 Promise 实例", done => {
+    const promise1 = new Promise(resolve => {
+      resolve();
+    });
+    const fn = sinon.fake();
+    const promise2 = promise1.then(
+      /*s1 */() => new Promise(resolve => resolve())
+    );
+    promise2.then(fn);
+    setTimeout(() => {
+      assert(fn.called);
+      done();
+    });
+  });
+  it("2.2.7.1.2 success 的返回值是一个 Promise 实例，且失败了", done => {
+    const promise1 = new Promise(resolve => {
+      resolve();
+    });
+    const fn = sinon.fake();
+    const promise2 = promise1.then(
+      /*s1 */() => new Promise((resolve, reject) => reject())
+    );
+    promise2.then(null, fn);
+    setTimeout(() => {
+      assert(fn.called);
+      done();
+    });
+  });
+  it("2.2.7.1.2 fail 的返回值是一个 Promise 实例", done => {
+    const promise1 = new Promise((resolve, reject) => {
+      reject();
+    });
+    const fn = sinon.fake();
+    const promise2 = promise1.then(
+      null,
+      () => new Promise(resolve => resolve())
+    );
+    promise2.then(fn, null);
+    setTimeout(() => {
+      assert(fn.called);
+      done();
+    });
+  });
+  it("2.2.7.1.2 fail 的返回值是一个 Promise 实例，且失败了", done => {
+    const promise1 = new Promise((resolve, reject) => {
+      reject();
+    });
+    const fn = sinon.fake();
+    const promise2 = promise1.then(
+      null,
+      () => new Promise((resolve, reject) => reject())
+    );
+    promise2.then(null, fn);
+    setTimeout(() => {
+      assert(fn.called);
+      done();
+    });
+  });
+  it("2.2.7.2 如果success抛出一个异常e,promise2 必须被拒绝", done => {
+    const promise1 = new Promise((resolve, reject) => {
+      resolve();
+    });
+    const fn = sinon.fake();
+    const error = new Error();
+    const promise2 = promise1.then(() => {
+      throw error;
+    });
+    promise2.then(null, fn);
+    setTimeout(() => {
+      assert(fn.called);
+      assert(fn.calledWith(error));
+      done();
+    });
+  });
+  it("2.2.7.2 如果fail抛出一个异常e,promise2 必须被拒绝", done => {
+    const promise1 = new Promise((resolve, reject) => {
+      reject();
+    });
+    const fn = sinon.fake();
+    const error = new Error();
+    const promise2 = promise1.then(null, () => {
+      throw error;
+    });
+    promise2.then(null, fn);
+    setTimeout(() => {
+      assert(fn.called);
+      assert(fn.calledWith(error));
+      done();
+    });
+  });
+
+  // 自己测试
+  it("测试then里面返回带then的属性", () => {
+    const promise1 = new Promise((resolve) => {
+      resolve(111)
+    })
+    const promise2 = promise1.then(result => {
+      // console.log("promise1的then里面")
+      // console.log(result)
+      return {
+        a: 2,
+        // then: (resolve, reject) => {
+        //   reject("hi-->luo-->hi")
+        // }
+        then: () => {
+          // console.log("会执行吗")
+        }
+      }
+    })
+    const promise3 = promise2.then(result => {
+      // console.log("接受的值-----------")
+      // console.log(result)
+    }, reason => {
+      // console.log("失败的原因")
+      // console.log(reason)
+    })
+  })
+
 });
