@@ -1,6 +1,9 @@
 class Promise2 {
+   succeed = null;
+  fail = null;
   state = "pending";
   callbacks = [];
+  
   resolve(result) {
     setTimeout(() => {
       if (this.state !== 'pending') return;
@@ -23,7 +26,7 @@ class Promise2 {
      if (typeof fn !== 'function') {
       throw new Error('Promise必须传入一个函数');
     }
-    fn(this.res.bind(this), this.rej.bind(this));
+    fn(this.resolve.bind(this), this.reject.bind(this));
   }
   then(succeed?, fail?) {
     const handle = [];
