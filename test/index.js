@@ -1,49 +1,50 @@
-import * as chai from "chai";
-import * as sinon from "sinon";
-import * as sinonChai from "sinon-chai";
+const chai = require("chai");
+const Promise2 = require("../src/promise.js");
+const sinon = require("sinon");
+const sinonChai = require("sinon-chai");
 chai.use(sinonChai);
 
 const assert = chai.assert;
-import Promise from "../src/promise";
 
 describe("Promise", () => {
   it("是一个类", () => {
-    assert.isFunction(Promise);
-    assert.isObject(Promise.prototype);
+    assert.isFunction(Promise2);
+    assert.isObject(Promise2.prototype);
   });
   it("new Promise() 如果接受的不是一个函数就报错", () => {
+    // assert.throw(fn) 的作用：如果 fn 报错，控制台就不报错。如果 fn 不报错，控制台就报错。
     assert.throw(() => {
       // @ts-ignore
-      new Promise();
+      new Promise2();
     });
     assert.throw(() => {
       // @ts-ignore
-      new Promise(1);
+      new Promise2(1);
     });
     assert.throw(() => {
       // @ts-ignore
-      new Promise(false);
+      new Promise2(false);
     });
   });
   it("new Promise(fn) 会生成一个对象，对象有 then 方法", () => {
-    const promise = new Promise(() => {});
+    const promise = new Promise2(() => {});
     assert.isFunction(promise.then);
   });
   it("new Promise(fn) 中的 fn 立即执行", () => {
     let fn = sinon.fake();
-    new Promise(fn);
+    new Promise2(fn);
     assert(fn.called);
   });
-  it("new Promise(fn) 中的 fn 执行的时候接受 resolve 和 reject 两个函数", done => {
-    new Promise((resolve, reject) => {
+  it("new Promise(fn) 中的 fn 执行的时候接受 resolve 和 reject 两个函数", (done) => {
+    new Promise2((resolve, reject) => {
       assert.isFunction(resolve);
       assert.isFunction(reject);
       done();
     });
   });
-  it("promise.then(success) 中的 success 会在 resolve 被调用的时候执行", done => {
+  it("promise.then(success) 中的 success 会在 resolve 被调用的时候执行", (done) => {
     const success = sinon.fake();
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise2((resolve, reject) => {
       assert.isFalse(success.called);
       resolve();
       setTimeout(() => {
@@ -54,9 +55,9 @@ describe("Promise", () => {
     // @ts-ignore
     promise.then(success);
   });
-  it("promise.then(null, fail) 中的 fail 会在 reject 被调用的时候执行", done => {
+  it("promise.then(null, fail) 中的 fail 会在 reject 被调用的时候执行", (done) => {
     const fail = sinon.fake();
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise2((resolve, reject) => {
       assert.isFalse(fail.called);
       reject();
       setTimeout(() => {
@@ -68,20 +69,20 @@ describe("Promise", () => {
     promise.then(null, fail);
   });
   it("2.2.1 onFulfilled和onRejected都是可选的参数：", () => {
-    const promise = new Promise(resolve => {
+    const promise = new Promise2((resolve) => {
       resolve();
     });
     promise.then(false, null);
     assert(1 === 1);
   });
-  it("2.2.2 如果onFulfilled是函数", done => {
+  it("2.2.2 如果onFulfilled是函数", (done) => {
     const succeed = sinon.fake();
-    const promise = new Promise(resolve => {
+    const promise = new Promise2((resolve) => {
       assert.isFalse(succeed.called);
       resolve(233);
       resolve(2333);
       setTimeout(() => {
-        assert(promise.state === "fulfilled");
+        assert(promise.status === "fulfilled");
         assert.isTrue(succeed.calledOnce);
         assert(succeed.calledWith(233));
         done();
@@ -89,14 +90,14 @@ describe("Promise", () => {
     });
     promise.then(succeed);
   });
-  it("2.2.3 如果onRejected是函数", done => {
+  it("2.2.3 如果onRejected是函数", (done) => {
     const fail = sinon.fake();
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise2((resolve, reject) => {
       assert.isFalse(fail.called);
       reject(233);
       reject(2333);
       setTimeout(() => {
-        assert(promise.state === "rejected");
+        assert(promise.status === "rejected");
         assert.isTrue(fail.calledOnce);
         assert(fail.calledWith(233));
         done();
@@ -104,9 +105,9 @@ describe("Promise", () => {
     });
     promise.then(null, fail);
   });
-  it("2.2.4 在我的代码执行完之前，不得调用 then 后面的俩函数", done => {
+  it("2.2.4 在我的代码执行完之前，不得调用 then 后面的俩函数", (done) => {
     const succeed = sinon.fake();
-    const promise = new Promise(resolve => {
+    const promise = new Promise2((resolve) => {
       resolve();
     });
     promise.then(succeed);
@@ -116,9 +117,9 @@ describe("Promise", () => {
       done();
     }, 0);
   });
-  it("2.2.4 失败回调", done => {
+  it("2.2.4 失败回调", (done) => {
     const fn = sinon.fake();
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise2((resolve, reject) => {
       reject();
     });
     promise.then(null, fn);
@@ -128,18 +129,18 @@ describe("Promise", () => {
       done();
     }, 0);
   });
-  it("2.2.5 onFulfilled和onRejected必须被当做函数调用", done => {
-    const promise = new Promise(resolve => {
+  it("2.2.5 onFulfilled和onRejected必须被当做函数调用", (done) => {
+    const promise = new Promise2((resolve) => {
       resolve();
     });
-    promise.then(function() {
+    promise.then(function () {
       "use strict";
       assert(this === undefined);
       done();
     });
   });
-  it("2.2.6 then可以在同一个promise里被多次调用", done => {
-    const promise = new Promise(resolve => {
+  it("2.2.6 then可以在同一个promise里被多次调用", (done) => {
+    const promise = new Promise2((resolve) => {
       resolve();
     });
     const callbacks = [sinon.fake(), sinon.fake(), sinon.fake()];
@@ -155,8 +156,8 @@ describe("Promise", () => {
       done();
     });
   });
-  it("2.2.6.2 then可以在同一个promise里被多次调用", done => {
-    const promise = new Promise((resolve, reject) => {
+  it("2.2.6.2 then可以在同一个promise里被多次调用", (done) => {
+    const promise = new Promise2((resolve, reject) => {
       reject();
     });
     const callbacks = [sinon.fake(), sinon.fake(), sinon.fake()];
