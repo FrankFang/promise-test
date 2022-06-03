@@ -8,4 +8,4 @@ CI 历史：https://travis-ci.org/github/FrankFang/promise-test/pull_requests
 4. 上传代码，点击你的仓库页面的 create pull request 按钮
 5. Travis CI 会检查你的代码是否正确
 6. 如果测试成功，你会看到绿色的成功提示
-7. 如果测试失败，你会看到失败提示
+7. 如果测试失败，你会看到失败的提示
