@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.2.0",
+    "@types/jest": "^29.5.12",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.7.3",
     "@types/sinon": "^7.0.13",
